@@ -13,7 +13,15 @@ class Car(models.Model):
     color = models.CharField(max_length=50, help_text="Enter the car color")
     length = models.FloatField(verbose_name="car`s length")
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name='cars')
-    load_volume = models.FloatField(null=True)
+    load_volume = models.FloatField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.type == 'b':
+            big_car_exists = Car.objects.filter(owner=self.owner, type='b').exists()
+            if big_car_exists and not self.pk:
+                raise Exception("Each driver can only have one heavy vehicle.")
+
+        super().save(*args, **kwargs)
 
 
 class Positioning(models.Model):

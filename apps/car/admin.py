@@ -11,7 +11,7 @@ class OwnerAdmin(admin.ModelAdmin):
 
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
-    list_display = ['length', 'type']
+    list_display = ['owner', 'length', 'type', 'color', 'load_volume']
 
 
 @admin.register(Positioning)
