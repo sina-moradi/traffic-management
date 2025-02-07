@@ -7,7 +7,7 @@ from .models.owner import Owner
 class OwnerNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
-        fields = ('name',)
+        fields = ('name', 'age')
 
 
 class CarListSerializers(serializers.ModelSerializer):

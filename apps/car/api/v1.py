@@ -14,6 +14,19 @@ class ColorFullCarListAPIView(generics.ListAPIView):
         return queryset
 
 
+class HeavyCarListAPIView(generics.ListAPIView):
+    serializer_class = CarListSerializers
+
+    def get_queryset(self):
+        queryset = Car.objects.filter(type='b', positions__location__width__gte=20.0)
+        return queryset
+
+
+class OwnerAgeFilterListAPIView(generics.ListAPIView):
+    serializer_class = CarListSerializers
+    queryset = Car.objects.filter(owner__age__gt=70)
+
+
 class OwnerCreateAPIView(generics.CreateAPIView):
 
     serializer_class = OwnerCreateSerializers

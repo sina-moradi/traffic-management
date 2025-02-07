@@ -21,13 +21,4 @@ class Migration(migrations.Migration):
                 ('geom', django.contrib.gis.db.models.fields.MultiLineStringField(srid=4326)),
             ],
         ),
-        migrations.CreateModel(
-            name='Positioning',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('location', django.contrib.gis.db.models.fields.PointField(srid=4326)),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('car', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='positions', to='car.car')),
-            ],
-        ),
     ]

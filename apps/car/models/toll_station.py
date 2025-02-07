@@ -6,8 +6,14 @@ class TollStation(models.Model):
     toll_per_station = models.PositiveIntegerField()
     location = models.PointField()
 
+    def __str__(self):
+        return self.name
+
 
 class Road(models.Model):
     name = models.CharField(max_length=50)
     width = models.FloatField()
     geom = models.MultiLineStringField()
+
+    def __str__(self):
+        return self.name
