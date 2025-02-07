@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.gis.measure import D
 from django.contrib.gis.geos import Point
+from django.db.models import Sum
 
 from apps.car.models.car import Car, Positioning, CarToll
 from apps.car.models.owner import Owner
@@ -42,10 +43,13 @@ class CarCreateAPIView(generics.CreateAPIView):
     queryset = Car.objects.all()
     serializer_class = CarCreateSerializers
 
-#
-# class OwnerInfoListAPIView(generics.ListAPIView):
-#     serializer_class = OwnerInfoSerializer
-#     queryset = Owner.objects.filter(total_toll_paid__gt=0).order_by()
+
+class OwnerInfoListAPIView(generics.ListAPIView):
+    serializer_class = OwnerInfoSerializer
+    queryset = Owner.objects.filter(cars__tolls__isnull=False).annotate(
+        total_toll=Sum('cars__tolls__toll')
+    ).order_by('total_toll')
+    print(queryset)
 
 
 class PositionCarAPIView(generics.ListAPIView):
@@ -58,13 +62,8 @@ class PositionCarAPIView(generics.ListAPIView):
 
 class CarTollsAPIView(APIView):
     def post(self, request, pk):
-        # car = request.data['car']
-        start_time = request.data['start_time']
-        print(start_time)
-        end_time = request.data['end_time']
         ser_data = CarTollTimeSerializers(data=request.data)
         if ser_data.is_valid():
-            print(ser_data.data['start_time'])
             queryset = CarToll.objects.filter(car_id=pk, date__range=(ser_data.data['start_time'],
                                                                       ser_data.data['end_time']))
             tolls = CarTollSerializers(queryset, many=True).data
