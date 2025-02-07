@@ -1,7 +1,6 @@
 from django.contrib.gis.db import models
 
 from .owner import Owner
-from .toll_station import Road
 
 
 class Car(models.Model):
@@ -28,6 +27,11 @@ class Car(models.Model):
 
 class Positioning(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='positions')
-    location = models.ForeignKey(Road, related_name='traffics', on_delete=models.CASCADE)
+    location = models.PointField()
     date = models.DateTimeField(auto_now_add=True)
 
+
+class CarToll(models.Model):
+    car = models.ForeignKey(Car, related_name='tolls', on_delete=models.CASCADE)
+    date = models.DateTimeField()
+    toll = models.PositiveIntegerField()

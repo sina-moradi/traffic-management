@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models.toll_station import TollStation, Road
-from .models.car import Car, Positioning
+from .models.car import Car, Positioning, CarToll
 from .models.owner import Owner
 
 
@@ -27,3 +27,8 @@ class TollStationAdmin(admin.ModelAdmin):
 @admin.register(Road)
 class TollStationAdmin(admin.ModelAdmin):
     list_display = ['name', 'width', 'geom']
+
+
+@admin.register(CarToll)
+class CarAdmin(admin.ModelAdmin):
+    list_display = ['car', 'toll', 'date']

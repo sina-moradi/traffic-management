@@ -1,8 +1,13 @@
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.gis.measure import D
+from django.contrib.gis.geos import Point
 
-from apps.car.models.car import Car
+from apps.car.models.car import Car, Positioning, CarToll
 from apps.car.models.owner import Owner
-from apps.car.serializers import CarListSerializers, OwnerCreateSerializers, CarCreateSerializers
+from apps.car.serializers import CarListSerializers, OwnerCreateSerializers, CarCreateSerializers, OwnerInfoSerializer,\
+    PositioningSerializers, CarTollSerializers, CarTollTimeSerializers
 
 
 class ColorFullCarListAPIView(generics.ListAPIView):
@@ -36,3 +41,32 @@ class OwnerCreateAPIView(generics.CreateAPIView):
 class CarCreateAPIView(generics.CreateAPIView):
     queryset = Car.objects.all()
     serializer_class = CarCreateSerializers
+
+#
+# class OwnerInfoListAPIView(generics.ListAPIView):
+#     serializer_class = OwnerInfoSerializer
+#     queryset = Owner.objects.filter(total_toll_paid__gt=0).order_by()
+
+
+class PositionCarAPIView(generics.ListAPIView):
+
+    center_point = Point(51.3890, 35.6892)
+    radius = D(m=600)
+    serializer_class = PositioningSerializers
+    queryset = Positioning.objects.filter(location__distance_lte=(center_point, radius), car__type='s')
+
+
+class CarTollsAPIView(APIView):
+    def post(self, request, pk):
+        # car = request.data['car']
+        start_time = request.data['start_time']
+        print(start_time)
+        end_time = request.data['end_time']
+        ser_data = CarTollTimeSerializers(data=request.data)
+        if ser_data.is_valid():
+            print(ser_data.data['start_time'])
+            queryset = CarToll.objects.filter(car_id=pk, date__range=(ser_data.data['start_time'],
+                                                                      ser_data.data['end_time']))
+            tolls = CarTollSerializers(queryset, many=True).data
+            return Response(data=tolls)
+        return Response(ser_data.errors, status=400)
